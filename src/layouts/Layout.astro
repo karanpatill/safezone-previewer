@@ -1,0 +1,182 @@
+---
+import '../styles/global.css';
+import { SITE, LOCALES, LOCALE_META, homePath, type Locale } from '../config/site';
+import { ui } from '../i18n/ui';
+
+interface Props {
+  locale?: Locale;
+  title: string;
+  description: string;
+  /** Path of this page, e.g. "/blog/foo/". */
+  path: string;
+  /** Translations of this page. Defaults to this page alone, which still yields a self-referencing hreflang. */
+  alternates?: Partial<Record<Locale, string>>;
+  ogType?: 'website' | 'article';
+  jsonLd?: Record<string, unknown>[];
+  noindex?: boolean;
+}
+
+const { locale = 'en', title, description, path, ogType = 'website', jsonLd = [], noindex = false } = Astro.props;
+const alternates = Astro.props.alternates ?? { [locale]: path };
+const t = ui[locale];
+const meta = LOCALE_META[locale];
+const canonical = new URL(path, SITE.domain).href;
+const home = homePath(locale);
+const isHome = path === home;
+const anchor = (id: string) => (isHome ? `#${id}` : `${home}#${id}`);
+const xDefault = alternates.en ?? alternates[locale];
+
+const org = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: SITE.name,
+  url: SITE.domain,
+  logo: `${SITE.domain}/favicon.svg`,
+  email: SITE.email,
+};
+---
+
+<!doctype html>
+<html lang={meta.htmlLang} dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#08090c" />
+    <meta name="color-scheme" content="dark" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex ? <meta name="robots" content="noindex" /> : <>
+      <link rel="canonical" href={canonical} />
+      <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+    </>}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap.xml" />
+
+    {!noindex && Object.entries(alternates).map(([l, p]) => (
+      <link rel="alternate" hreflang={LOCALE_META[l as Locale].htmlLang} href={new URL(p!, SITE.domain).href} />
+    ))}
+    {!noindex && xDefault && <link rel="alternate" hreflang="x-default" href={new URL(xDefault, SITE.domain).href} />}
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={meta.og} />
+    {Object.keys(alternates).filter((l) => l !== locale).map((l) => (
+      <meta property="og:locale:alternate" content={LOCALE_META[l as Locale].og} />
+    ))}
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(org)} />
+    {jsonLd.map((d) => <script type="application/ld+json" set:html={JSON.stringify(d)} />)}
+
+    {SITE.adsenseClient && (
+      <script is:inline async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${SITE.adsenseClient}`} crossorigin="anonymous"></script>
+    )}
+  </head>
+
+  <body class="min-h-dvh flex flex-col font-sans antialiased">
+    <a href={isHome ? '#tool' : `${home}#tool`} class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[70] btn btn-primary">{t.nav.skip}</a>
+
+    <header class="sticky top-0 z-50 border-b border-line bg-canvas/80 backdrop-blur-xl backdrop-saturate-150">
+      <div class="mx-auto max-w-[1200px] px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+        <a href={home} class="flex items-center gap-2.5 shrink-0" aria-label={`${SITE.name} — ${t.nav.tool}`}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="4.5" y="1.5" width="15" height="21" rx="3.5" stroke="currentColor" stroke-width="1.5" />
+            <rect x="7.5" y="5.5" width="7.5" height="10" rx="1" stroke="var(--color-safe)" stroke-width="1.5" />
+          </svg>
+          <span class="text-[15px] font-semibold tracking-tight">{SITE.name}</span>
+        </a>
+
+        <nav class="hidden md:flex items-center gap-1 text-[13.5px]" aria-label="Primary">
+          <a href={anchor('tool')} class="btn btn-ghost h-8">{t.nav.tool}</a>
+          <a href={anchor('specs')} class="btn btn-ghost h-8">{t.nav.specs}</a>
+          <a href={anchor('crops')} class="btn btn-ghost h-8">{t.nav.crops}</a>
+          <a href={anchor('faq')} class="btn btn-ghost h-8">{t.nav.faq}</a>
+          <a href="/blog/" class="btn btn-ghost h-8">{t.nav.guides}</a>
+        </nav>
+
+        <details class="relative group" data-lang-menu>
+          <summary class="btn h-8 list-none cursor-pointer [&::-webkit-details-marker]:hidden" aria-label={t.nav.language}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg>
+            <span class="text-[13px]">{meta.name}</span>
+          </summary>
+          <ul class="absolute right-0 mt-2 w-44 panel p-1 shadow-2xl shadow-black/60">
+            {LOCALES.map((l) => (
+              <li>
+                <a
+                  href={alternates[l] ?? homePath(l)}
+                  hreflang={LOCALE_META[l].htmlLang}
+                  lang={LOCALE_META[l].htmlLang}
+                  aria-current={l === locale ? 'true' : undefined}
+                  class={`flex items-center justify-between rounded-md px-3 h-9 text-[13px] ${l === locale ? 'bg-raised text-ink' : 'text-ink-2 hover:bg-raised hover:text-ink'}`}
+                >
+                  {LOCALE_META[l].name}
+                  {l === locale && <span class="sz-dot" data-state="safe"></span>}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </details>
+      </div>
+    </header>
+
+    <main class="flex-1">
+      <slot />
+    </main>
+
+    <footer class="border-t border-line mt-24">
+      <div class="mx-auto max-w-[1200px] px-4 sm:px-6 py-14 grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+        <div class="max-w-sm">
+          <p class="text-[15px] font-semibold">{SITE.name}</p>
+          <p class="mt-3 text-[13.5px] leading-relaxed text-ink-2">{t.footer.about}</p>
+        </div>
+        <div>
+          <p class="eyebrow mb-3">{t.footer.product}</p>
+          <ul class="space-y-2 text-[13.5px] text-ink-2">
+            <li><a class="hover:text-ink" href={anchor('tool')}>{t.nav.tool}</a></li>
+            <li><a class="hover:text-ink" href={anchor('specs')}>{t.nav.specs}</a></li>
+            <li><a class="hover:text-ink" href={anchor('crops')}>{t.nav.crops}</a></li>
+            <li><a class="hover:text-ink" href="/blog/">{t.footer.links.guides}</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="eyebrow mb-3">{t.footer.company}</p>
+          <ul class="space-y-2 text-[13.5px] text-ink-2">
+            <li><a class="hover:text-ink" href="/about/">{t.footer.links.about}</a></li>
+            <li><a class="hover:text-ink" href="/contact/">{t.footer.links.contact}</a></li>
+            <li><a class="hover:text-ink" href="/privacy-policy/">{t.footer.links.privacy}</a></li>
+            <li><a class="hover:text-ink" href="/terms-of-service/">{t.footer.links.terms}</a></li>
+            <li><a class="hover:text-ink" href="/disclaimer/">{t.footer.links.disclaimer}</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="eyebrow mb-3">{t.nav.language}</p>
+          <ul class="space-y-2 text-[13.5px] text-ink-2">
+            {LOCALES.map((l) => (
+              <li><a class="hover:text-ink" href={homePath(l)} hreflang={LOCALE_META[l].htmlLang} lang={LOCALE_META[l].htmlLang}>{LOCALE_META[l].name}</a></li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <div class="mx-auto max-w-[1200px] px-4 sm:px-6 pb-10 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between text-[12px] text-ink-3">
+        <p>© {new Date().getFullYear()} {SITE.name}. {t.footer.rights}</p>
+        <p class="max-w-xl sm:text-right leading-relaxed">{t.footer.disclaimer}</p>
+      </div>
+    </footer>
+
+    <script>
+      // Close the language menu on outside click or Escape.
+      const menu = document.querySelector<HTMLDetailsElement>('[data-lang-menu]');
+      document.addEventListener('click', (e) => {
+        if (menu?.open && !menu.contains(e.target as Node)) menu.open = false;
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && menu?.open) { menu.open = false; menu.querySelector('summary')?.focus(); }
+      });
+    </script>
+  </body>
+</html>

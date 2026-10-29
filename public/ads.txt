@@ -1,0 +1,3 @@
+# Replace pub-0000000000000000 with your AdSense publisher ID once your account is approved,
+# and set the same ID (with the "ca-" prefix) as adsenseClient in src/config/site.ts.
+google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0

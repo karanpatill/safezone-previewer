@@ -1,0 +1,37 @@
+---
+import { SITE } from '../config/site';
+
+interface Props {
+  /** AdSense ad-unit slot ID from your AdSense dashboard. */
+  slot: string;
+  label: string;
+  format?: 'horizontal' | 'rectangle' | 'auto';
+}
+
+const { slot, label, format = 'auto' } = Astro.props;
+// Reserve the box up front so a late-filling ad can never shift the layout.
+const minH = format === 'rectangle' ? 'min-h-[280px]' : format === 'horizontal' ? 'min-h-[100px] sm:min-h-[90px]' : 'min-h-[280px] sm:min-h-[120px]';
+const live = Boolean(SITE.adsenseClient);
+const dev = import.meta.env.DEV;
+---
+
+{(live || dev) && (
+  <aside class="my-10 mx-auto max-w-[970px]" aria-label={label}>
+    <p class="eyebrow text-center mb-2 !text-[10px]">{label}</p>
+    <div class={`${minH} rounded-xl border border-line bg-surface/40 overflow-hidden flex items-center justify-center`}>
+      {live ? (
+        <ins
+          class="adsbygoogle block w-full"
+          data-ad-client={SITE.adsenseClient}
+          data-ad-slot={slot}
+          data-ad-format={format === 'auto' ? 'auto' : format}
+          data-full-width-responsive="true"
+        ></ins>
+      ) : (
+        <span class="kbd">ad slot · {slot} · {format}</span>
+      )}
+    </div>
+  </aside>
+)}
+
+{live && <script is:inline>(window.adsbygoogle = window.adsbygoogle || []).push({});</script>}

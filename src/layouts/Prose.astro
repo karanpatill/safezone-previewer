@@ -1,0 +1,83 @@
+---
+import Layout from './Layout.astro';
+import AdBanner from '../components/AdBanner.astro';
+import { SITE } from '../config/site';
+
+interface Props {
+  frontmatter: {
+    title: string;
+    description: string;
+    /** Set on blog posts; enables article markup, byline and ads. */
+    date?: string;
+    updated?: string;
+    eyebrow?: string;
+  };
+}
+
+const { frontmatter: fm } = Astro.props;
+const path = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`;
+const isPost = Boolean(fm.date);
+const fmt = (d: string) => new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+const html = (await Astro.slots.render('default')) ?? '';
+const words = html.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
+const minutes = Math.max(1, Math.round(words / 230));
+
+const jsonLd = isPost
+  ? [{
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: fm.title,
+      description: fm.description,
+      datePublished: fm.date,
+      dateModified: fm.updated ?? fm.date,
+      author: { '@type': 'Person', name: SITE.author },
+      publisher: { '@type': 'Organization', name: SITE.name, logo: { '@type': 'ImageObject', url: `${SITE.domain}/favicon.svg` } },
+      mainEntityOfPage: new URL(path, SITE.domain).href,
+      wordCount: words,
+    }, {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: SITE.domain + '/' },
+        { '@type': 'ListItem', position: 2, name: 'Guides', item: `${SITE.domain}/blog/` },
+        { '@type': 'ListItem', position: 3, name: fm.title, item: new URL(path, SITE.domain).href },
+      ],
+    }]
+  : [];
+---
+
+<Layout title={`${fm.title} — ${SITE.name}`} description={fm.description} path={path} ogType={isPost ? 'article' : 'website'} jsonLd={jsonLd}>
+  <article class="mx-auto max-w-[720px] px-4 sm:px-6 pt-12 sm:pt-16">
+    <header class="mb-10">
+      {isPost
+        ? <a href="/blog/" class="eyebrow hover:text-ink">← Guides</a>
+        : fm.eyebrow && <p class="eyebrow">{fm.eyebrow}</p>}
+      <h1 class="mt-4 text-[clamp(1.875rem,1.3rem+2vw,2.625rem)] font-semibold tracking-[-0.03em] leading-[1.12] text-balance">{fm.title}</h1>
+      <p class="mt-4 text-[17px] leading-relaxed text-ink-2 text-pretty">{fm.description}</p>
+      {isPost && (
+        <p class="mt-6 kbd !text-[12px] flex flex-wrap gap-x-3 gap-y-1">
+          <span>{SITE.author}</span><span aria-hidden="true">·</span>
+          <time datetime={fm.date}>{fmt(fm.date!)}</time><span aria-hidden="true">·</span>
+          <span>{minutes} min read</span>
+          {fm.updated && <><span aria-hidden="true">·</span><span>Updated <time datetime={fm.updated}>{fmt(fm.updated)}</time></span></>}
+        </p>
+      )}
+      {!isPost && fm.updated && <p class="mt-6 kbd !text-[12px]">Last updated <time datetime={fm.updated}>{fmt(fm.updated)}</time></p>}
+    </header>
+
+    <div class="prose-sz" set:html={html} />
+
+    {isPost && (
+      <>
+        <AdBanner slot="post-bottom" label="Advertisement" format="auto" />
+        <aside class="panel p-6 mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <p class="text-[15px] font-semibold">Check your own frame</p>
+            <p class="text-[14px] text-ink-2 mt-1">Drop a video or image and see exactly what each app covers.</p>
+          </div>
+          <a href="/#tool" class="btn btn-primary shrink-0">Open the previewer</a>
+        </aside>
+      </>
+    )}
+  </article>
+</Layout>

@@ -1,0 +1,75 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { SITE } from '../config/site';
+
+const field = 'h-10 rounded-lg bg-canvas border border-line px-3 text-[14px] text-ink focus:border-accent outline-none';
+---
+
+<Layout title={`Contact — ${SITE.name}`} description="Report a platform layout change, request a feature or ask a question about SafeZoneSnap." path="/contact/">
+  <section class="mx-auto max-w-[720px] px-4 sm:px-6 pt-12 sm:pt-16">
+    <p class="eyebrow">Contact</p>
+    <h1 class="mt-4 text-[clamp(1.875rem,1.3rem+2vw,2.625rem)] font-semibold tracking-[-0.03em] leading-[1.12]">Get in touch</h1>
+    <p class="mt-4 text-[17px] leading-relaxed text-ink-2">
+      Noticed a platform interface change, found a bug or have a feature request? Layout reports are the most useful messages we receive, and a screenshot of the new layout helps us update the presets quickly.
+    </p>
+
+    <form id="contact-form" class="panel mt-10 p-6 sm:p-8 grid gap-5" novalidate>
+      <div class="grid gap-5 sm:grid-cols-2">
+        <label class="grid gap-1.5 text-[13px] text-ink-2">
+          Name
+          <input name="name" required autocomplete="name" class={field} />
+        </label>
+        <label class="grid gap-1.5 text-[13px] text-ink-2">
+          Email
+          <input name="email" type="email" required autocomplete="email" class={field} />
+        </label>
+      </div>
+      <label class="grid gap-1.5 text-[13px] text-ink-2">
+        Topic
+        <select name="topic" class={field}>
+          <option>Platform layout change</option>
+          <option>Bug report</option>
+          <option>Feature request</option>
+          <option>Business or partnership</option>
+          <option>Privacy request</option>
+          <option>Other</option>
+        </select>
+      </label>
+      <label class="grid gap-1.5 text-[13px] text-ink-2">
+        Message
+        <textarea name="message" required minlength="20" rows="6" class="rounded-lg bg-canvas border border-line px-3 py-2.5 text-[14px] leading-relaxed text-ink focus:border-accent outline-none resize-y"></textarea>
+      </label>
+      <p id="form-error" class="hidden text-[13px] text-danger" role="alert"></p>
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <p class="text-[12.5px] text-ink-3">Opens your email app with the message ready to send.</p>
+        <button type="submit" class="btn btn-primary">Compose email</button>
+      </div>
+    </form>
+
+    <p class="mt-6 text-[14px] text-ink-2">
+      Prefer to write directly? Email <a class="text-accent underline underline-offset-4" href={`mailto:${SITE.email}`}>{SITE.email}</a>. We usually reply within two business days.
+    </p>
+  </section>
+
+  <script define:vars={{ email: SITE.email }}>
+    const form = document.getElementById('contact-form');
+    const err = document.getElementById('form-error');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = new FormData(form);
+      const problems = [];
+      if (!String(d.get('name')).trim()) problems.push('your name');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(d.get('email')))) problems.push('a valid email address');
+      if (String(d.get('message')).trim().length < 20) problems.push('a message of at least 20 characters');
+      if (problems.length) {
+        err.textContent = 'Please add ' + problems.join(', ') + '.';
+        err.classList.remove('hidden');
+        return;
+      }
+      err.classList.add('hidden');
+      const subject = '[SafeZoneSnap] ' + d.get('topic');
+      const body = d.get('message') + '\n\n— ' + d.get('name') + ' <' + d.get('email') + '>';
+      location.href = 'mailto:' + email + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    });
+  </script>
+</Layout>
