@@ -6,6 +6,7 @@ import { SITE, LOCALES, LOCALE_META, homePath, type Locale } from '../config/sit
 import { ui } from '../i18n/ui';
 import { CROPS, PLATFORMS, cropOffset, safeRect, usablePct, type PlatformId } from '../data/platforms';
 import type { HomeContent } from '../data/home/types';
+import { ID, OG_IMAGE, SOURCES, SOURCE_ORDER, abs, stripHtml } from '../config/seo';
 
 interface Props { locale: Locale; content: HomeContent }
 const { locale, content } = Astro.props;
@@ -25,32 +26,69 @@ const cropRows = [
   { label: '3:4', ...CROPS.crop34 },
   { label: '1:1', ...CROPS.crop11 },
 ];
+const pageUrl = abs(path);
+const workflow = content.sections.find((s) => s.id === 'workflow');
+const steps = workflow?.blocks.flatMap((b) => ('ol' in b ? b.ol : [])) ?? [];
 const updated = new Date(SITE.updated).toLocaleDateString(LOCALE_META[locale].htmlLang, { year: 'numeric', month: 'long', day: 'numeric' });
 
 const jsonLd = [
   {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
+    '@id': `${pageUrl}#app`,
     name: SITE.name,
-    url: new URL(path, SITE.domain).href,
+    url: pageUrl,
     description: t.meta.description,
-    inLanguage: locale,
+    inLanguage: LOCALE_META[locale].htmlLang,
     applicationCategory: 'MultimediaApplication',
+    applicationSubCategory: 'Video layout checker',
     operatingSystem: 'Any (modern web browser)',
     browserRequirements: 'Requires JavaScript and HTML5 Canvas',
+    isAccessibleForFree: true,
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    featureList: [
+      ...(['reels', 'tiktok', 'shorts', 'story', 'reelsAds'] as const).map((id) => `${t.tool.platforms[id]}: ${safeRect(PLATFORMS[id].margins).w} × ${safeRect(PLATFORMS[id].margins).h} px`),
+      t.tool.layers.crop45, t.tool.layers.crop34, t.tool.layers.crop11,
+      t.tool.actions.frame, t.tool.actions.template, t.tool.actions.copy,
+    ],
+    image: abs(OG_IMAGE.path),
+    author: { '@id': ID.person },
+    publisher: { '@id': ID.org },
+    isPartOf: { '@id': ID.website },
+    datePublished: SITE.updated,
     dateModified: SITE.updated,
+    citation: SOURCE_ORDER.map((k) => ({ '@type': 'CreativeWork', name: SOURCES[k].name, url: SOURCES[k].url, publisher: { '@type': 'Organization', name: SOURCES[k].publisher } })),
   },
   {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    inLanguage: locale,
+    '@id': `${pageUrl}#faq`,
+    inLanguage: LOCALE_META[locale].htmlLang,
     mainEntity: content.faqs.map((f) => ({
       '@type': 'Question',
       name: f.q,
-      acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') },
+      acceptedAnswer: { '@type': 'Answer', text: stripHtml(f.a) },
     })),
   },
+  ...(workflow ? [{
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    '@id': `${pageUrl}#workflow`,
+    name: workflow.title,
+    description: stripHtml(workflow.lead ?? ''),
+    inLanguage: LOCALE_META[locale].htmlLang,
+    totalTime: 'PT2M',
+    estimatedCost: { '@type': 'MonetaryAmount', currency: 'USD', value: '0' },
+    tool: [{ '@type': 'HowToTool', name: SITE.name, url: pageUrl }],
+    supply: [{ '@type': 'HowToSupply', name: '1080 × 1920 (9:16) video, still frame or screenshot' }],
+    step: steps.map((li, i) => ({
+      '@type': 'HowToStep',
+      position: i + 1,
+      name: stripHtml(li.match(/<strong>(.*?)<\/strong>/)?.[1] ?? li).replace(/[.:]$/, ''),
+      text: stripHtml(li),
+      url: `${pageUrl}#workflow`,
+    })),
+  }] : []),
 ];
 ---
 
@@ -78,6 +116,7 @@ const jsonLd = [
             <li><a href={`#${s.id}`} class="block -ml-px border-l border-transparent pl-3 py-0.5 text-ink-3 hover:text-ink hover:border-ink-2">{s.title}</a></li>
           ))}
           <li><a href="#faq" class="block -ml-px border-l border-transparent pl-3 py-0.5 text-ink-3 hover:text-ink hover:border-ink-2">{content.faqTitle}</a></li>
+          <li><a href="#sources" class="block -ml-px border-l border-transparent pl-3 py-0.5 text-ink-3 hover:text-ink hover:border-ink-2">{content.sources.title}</a></li>
         </ul>
       </div>
     </nav>
@@ -88,6 +127,7 @@ const jsonLd = [
       {content.sections.map((s, i) => (
         <section id={s.id} class="scroll-mt-24">
           <h2>{s.title}</h2>
+          {s.lead && <p class="lead" set:html={s.lead} />}
           {s.blocks.map((b) => (
             'p' in b ? <p set:html={b.p} /> :
             'h3' in b ? <h3 set:html={b.h3} /> :
@@ -139,6 +179,16 @@ const jsonLd = [
             </details>
           ))}
         </div>
+      </section>
+
+      <section id="sources" class="scroll-mt-24">
+        <h2>{content.sources.title}</h2>
+        <p set:html={content.sources.note} />
+        <ul>
+          {SOURCE_ORDER.map((k) => (
+            <li><a href={SOURCES[k].url} rel="noopener">{SOURCES[k].name}</a> <span class="text-ink-3">— {SOURCES[k].publisher}</span></li>
+          ))}
+        </ul>
       </section>
     </article>
   </div>

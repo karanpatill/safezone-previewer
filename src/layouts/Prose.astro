@@ -2,70 +2,103 @@
 import Layout from './Layout.astro';
 import AdBanner from '../components/AdBanner.astro';
 import { SITE } from '../config/site';
+import { ID, OG_IMAGE, SOURCES, abs, type SourceId } from '../config/seo';
 
 interface Props {
   frontmatter: {
     title: string;
     description: string;
+    /** 45–60 word direct answer shown under the H1, written to be quoted on its own. */
+    summary?: string;
     /** Set on blog posts; enables article markup, byline and ads. */
     date?: string;
     updated?: string;
     eyebrow?: string;
+    /** Keys of SOURCES cited by this page. */
+    sources?: SourceId[];
   };
 }
 
 const { frontmatter: fm } = Astro.props;
 const path = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`;
+const url = abs(path);
 const isPost = Boolean(fm.date);
+const modified = fm.updated ?? fm.date;
+const sources = (fm.sources ?? []).map((k) => SOURCES[k]);
 const fmt = (d: string) => new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 const html = (await Astro.slots.render('default')) ?? '';
 const words = html.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
 const minutes = Math.max(1, Math.round(words / 230));
 
+const breadcrumbs = isPost
+  ? [{ name: 'Guides', path: '/blog/' }, { name: fm.title, path }]
+  : [{ name: fm.title, path }];
+
+const citation = sources.map((s) => ({ '@type': 'CreativeWork', name: s.name, url: s.url, publisher: { '@type': 'Organization', name: s.publisher } }));
 const jsonLd = isPost
   ? [{
       '@context': 'https://schema.org',
       '@type': 'Article',
+      '@id': `${url}#article`,
       headline: fm.title,
-      description: fm.description,
+      description: fm.summary ?? fm.description,
+      inLanguage: 'en',
+      image: abs(OG_IMAGE.path),
       datePublished: fm.date,
-      dateModified: fm.updated ?? fm.date,
-      author: { '@type': 'Person', name: SITE.author },
-      publisher: { '@type': 'Organization', name: SITE.name, logo: { '@type': 'ImageObject', url: `${SITE.domain}/favicon.svg` } },
-      mainEntityOfPage: new URL(path, SITE.domain).href,
+      dateModified: modified,
+      author: { '@type': 'Person', '@id': ID.person, name: SITE.author, url: abs('/about/') },
+      publisher: { '@id': ID.org },
+      isPartOf: { '@id': ID.website },
+      mainEntityOfPage: url,
       wordCount: words,
-    }, {
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: SITE.domain + '/' },
-        { '@type': 'ListItem', position: 2, name: 'Guides', item: `${SITE.domain}/blog/` },
-        { '@type': 'ListItem', position: 3, name: fm.title, item: new URL(path, SITE.domain).href },
-      ],
+      ...(citation.length && { citation }),
     }]
-  : [];
+  : [{
+      '@context': 'https://schema.org',
+      '@type': path === '/about/' ? 'AboutPage' : 'WebPage',
+      '@id': `${url}#webpage`,
+      name: fm.title,
+      description: fm.summary ?? fm.description,
+      url,
+      inLanguage: 'en',
+      isPartOf: { '@id': ID.website },
+      ...(path === '/about/' && { mainEntity: { '@id': ID.person } }),
+      ...(fm.updated && { dateModified: fm.updated }),
+      ...(citation.length && { citation }),
+    }];
 ---
 
-<Layout title={`${fm.title} — ${SITE.name}`} description={fm.description} path={path} ogType={isPost ? 'article' : 'website'} jsonLd={jsonLd}>
+<Layout title={`${fm.title} — ${SITE.name}`} description={fm.description} path={path} ogType={isPost ? 'article' : 'website'} jsonLd={jsonLd} breadcrumbs={breadcrumbs}>
   <article class="mx-auto max-w-[720px] px-4 sm:px-6 pt-12 sm:pt-16">
     <header class="mb-10">
       {isPost
         ? <a href="/blog/" class="eyebrow hover:text-ink">← Guides</a>
         : fm.eyebrow && <p class="eyebrow">{fm.eyebrow}</p>}
       <h1 class="mt-4 text-[clamp(1.875rem,1.3rem+2vw,2.625rem)] font-semibold tracking-[-0.03em] leading-[1.12] text-balance">{fm.title}</h1>
-      <p class="mt-4 text-[17px] leading-relaxed text-ink-2 text-pretty">{fm.description}</p>
+      <p class="mt-4 text-[17px] leading-relaxed text-ink-2 text-pretty">{fm.summary ?? fm.description}</p>
       {isPost && (
         <p class="mt-6 kbd !text-[12px] flex flex-wrap gap-x-3 gap-y-1">
-          <span>{SITE.author}</span><span aria-hidden="true">·</span>
-          <time datetime={fm.date}>{fmt(fm.date!)}</time><span aria-hidden="true">·</span>
+          <a href="/about/" rel="author" class="hover:text-ink">{SITE.author}</a><span aria-hidden="true">·</span>
+          <span>Last updated <time datetime={modified}>{fmt(modified!)}</time></span><span aria-hidden="true">·</span>
           <span>{minutes} min read</span>
-          {fm.updated && <><span aria-hidden="true">·</span><span>Updated <time datetime={fm.updated}>{fmt(fm.updated)}</time></span></>}
         </p>
       )}
       {!isPost && fm.updated && <p class="mt-6 kbd !text-[12px]">Last updated <time datetime={fm.updated}>{fmt(fm.updated)}</time></p>}
     </header>
 
     <div class="prose-sz" set:html={html} />
+
+    {sources.length > 0 && (
+      <section class="prose-sz mt-14" aria-labelledby="sources">
+        <h2 id="sources">Sources and methodology</h2>
+        <p>
+          Organic Reels, TikTok and Shorts margins are SafeZoneSnap’s own measurements of each app’s current player on a 1080 × 1920 frame, taken as the worst case across common phone shapes and rounded conservatively. Stories and Reels-ad margins follow Meta’s published percentages. The references below document frame sizes and player behaviour; <a href="/about/#how-the-presets-are-measured">read the full methodology</a>.
+        </p>
+        <ul>
+          {sources.map((s) => <li><a href={s.url} rel="noopener">{s.name}</a> <span class="text-ink-3">— {s.publisher}</span></li>)}
+        </ul>
+      </section>
+    )}
 
     {isPost && (
       <>

@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import { SITE, LOCALES, LOCALE_META, homePath, type Locale } from '../config/site';
 import { ui } from '../i18n/ui';
+import { ID, OG_IMAGE, abs, breadcrumbList } from '../config/seo';
 
 interface Props {
   locale?: Locale;
@@ -13,10 +14,18 @@ interface Props {
   alternates?: Partial<Record<Locale, string>>;
   ogType?: 'website' | 'article';
   jsonLd?: Record<string, unknown>[];
+  /** Trail below Home, e.g. [{ name: 'Guides', path: '/blog/' }]. Emits BreadcrumbList markup. */
+  breadcrumbs?: { name: string; path: string }[];
+  /** Absolute path of a 1200 × 630 raster social card. */
+  image?: string;
+  imageAlt?: string;
   noindex?: boolean;
 }
 
-const { locale = 'en', title, description, path, ogType = 'website', jsonLd = [], noindex = false } = Astro.props;
+const {
+  locale = 'en', title, description, path, ogType = 'website', jsonLd = [], breadcrumbs = [],
+  image = OG_IMAGE.path, imageAlt = `${SITE.name} — safe zone previewer for Instagram Reels, TikTok and YouTube Shorts`, noindex = false,
+} = Astro.props;
 const alternates = Astro.props.alternates ?? { [locale]: path };
 const t = ui[locale];
 const meta = LOCALE_META[locale];
@@ -26,14 +35,43 @@ const isHome = path === home;
 const anchor = (id: string) => (isHome ? `#${id}` : `${home}#${id}`);
 const xDefault = alternates.en ?? alternates[locale];
 
-const org = {
+const imageUrl = abs(image);
+
+// Site-wide entities. Page-level markup references these by @id instead of repeating them.
+const graph = {
   '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: SITE.name,
-  url: SITE.domain,
-  logo: `${SITE.domain}/favicon.svg`,
-  email: SITE.email,
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': ID.org,
+      name: SITE.name,
+      url: `${SITE.domain}/`,
+      logo: { '@type': 'ImageObject', url: abs('/favicon.svg'), width: 32, height: 32 },
+      image: abs(OG_IMAGE.path),
+      email: SITE.email,
+      founder: { '@id': ID.person },
+      contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', email: SITE.email, url: abs('/contact/'), availableLanguage: LOCALES.map((l) => LOCALE_META[l].name) },
+    },
+    {
+      '@type': 'Person',
+      '@id': ID.person,
+      name: SITE.author,
+      url: abs('/about/'),
+      jobTitle: 'Independent web developer',
+      worksFor: { '@id': ID.org },
+      knowsAbout: ['Vertical video', 'Social media safe zones', 'Video aspect ratios', 'Instagram Reels', 'TikTok', 'YouTube Shorts', 'Web development'],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': ID.website,
+      name: SITE.name,
+      url: `${SITE.domain}/`,
+      inLanguage: LOCALES.map((l) => LOCALE_META[l].htmlLang),
+      publisher: { '@id': ID.org },
+    },
+  ],
 };
+const trail = breadcrumbs.length ? [breadcrumbList([{ name: SITE.name, path: home }, ...breadcrumbs])] : [];
 ---
 
 <!doctype html>
@@ -66,12 +104,19 @@ const org = {
     {Object.keys(alternates).filter((l) => l !== locale).map((l) => (
       <meta property="og:locale:alternate" content={LOCALE_META[l as Locale].og} />
     ))}
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content={String(OG_IMAGE.width)} />
+    <meta property="og:image:height" content={String(OG_IMAGE.height)} />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
+    <meta name="twitter:image:alt" content={imageAlt} />
 
-    <script type="application/ld+json" set:html={JSON.stringify(org)} />
-    {jsonLd.map((d) => <script type="application/ld+json" set:html={JSON.stringify(d)} />)}
+    <script type="application/ld+json" set:html={JSON.stringify(graph)} />
+    {[...trail, ...jsonLd].map((d) => <script type="application/ld+json" set:html={JSON.stringify(d)} />)}
 
     {SITE.adsenseClient && (
       <script is:inline async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${SITE.adsenseClient}`} crossorigin="anonymous"></script>

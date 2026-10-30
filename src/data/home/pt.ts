@@ -11,6 +11,7 @@ const pt: HomeContent = {
     {
       id: 'what',
       title: 'O que é, de fato, uma zona segura',
+      lead: 'Uma zona segura é a parte de um vídeo vertical de 1080 × 1920 que nenhuma interface do app cobre. No Instagram Reels ela mede 880 × 1280 px (220 px no topo, 420 px embaixo, 60 px à esquerda e 140 px à direita); no TikTok, 870 × 1260 px; e no YouTube Shorts, 880 × 1380 px. Mantenha textos, rostos, logos e chamadas para ação dentro dela.',
       blocks: [
         { p: 'Zona segura é a parte do quadro vertical sobre a qual nenhuma plataforma vai desenhar a própria interface. Instagram Reels, TikTok e YouTube Shorts exibem o seu vídeo de ponta a ponta numa tela de 1080 × 1920 pixels e, por cima dele, desenham botões, legenda, barra de progresso e navegação. Não existe espaço reservado: o app pinta os controles direto sobre os seus pixels e ainda aplica um degradê escuro para que o texto branco dele fique legível.' },
         { p: 'É por isso que um quadro perfeito no editor pode desandar depois de publicado. A legenda do terço inferior bate na descrição e no nome do áudio; o preço no canto do produto some atrás do botão de curtir; o rosto do apresentador, enquadrado um pouco alto, fica sob as abas «Seguindo / Para você». O editor não sabe nada da interface que será empilhada depois, então o problema não aparece na prévia do computador.' },
@@ -35,6 +36,7 @@ const pt: HomeContent = {
     {
       id: 'specs',
       title: 'Medidas da zona segura por plataforma',
+      lead: 'Num quadro de 1080 × 1920, mantenha o conteúdo importante dentro destas margens (topo / base / esquerda / direita): Instagram Reels 220 / 420 / 60 / 140 px, TikTok 180 / 480 / 60 / 150 px, YouTube Shorts 160 / 380 / 60 / 140 px, Stories do Instagram 250 / 250 / 65 / 65 px e anúncios no Reels 250 / 670 / 65 / 65 px. Um layout único para os três apps orgânicos precisa de 220 / 480 / 60 / 150 px.',
       blocks: [
         { p: 'A tabela mostra as margens usadas em cada predefinição do SafeZoneSnap no quadro padrão de 1080 × 1920. «Zona segura» é o retângulo que sobra depois de tirar as quatro margens e «Útil» é a fração do quadro que ele representa. As linhas de Stories e de anúncios em Reels seguem a orientação publicada pela Meta; Reels, TikTok e Shorts orgânicos são medições de referência do layout atual de cada app.' },
         { table: 'specs' },
@@ -51,6 +53,7 @@ const pt: HomeContent = {
     {
       id: 'crops',
       title: 'Cortes do feed e do perfil: a segunda zona segura',
+      lead: 'Um Reel 9:16 exibido no feed do Instagram ou do Facebook é cortado para 4:5 (1080 × 1350), o que remove 285 px do topo e da base. A grade do perfil do Instagram usa 3:4 (1080 × 1440) e remove 240 px de cada ponta; um quadrado 1:1 remove 420 px. Os cortes são centralizados, então mantenha o texto entre y 285 e y 1500.',
       blocks: [
         { p: 'Um vídeo vertical nem sempre aparece em 9:16. No feed principal do Instagram e do Facebook ele é cortado em 4:5; na grade do perfil vira uma miniatura 3:4, formato que o Instagram adotou em janeiro de 2025; outras superfícies ainda usam 1:1. Todos os cortes partem do centro e removem faixas iguais em cima e embaixo.' },
         { table: 'crops' },
@@ -70,7 +73,8 @@ const pt: HomeContent = {
     },
     {
       id: 'workflow',
-      title: 'Como usar o visualizador numa edição de verdade',
+      title: 'Como verificar as zonas seguras de um vídeo',
+      lead: 'Para verificar as zonas seguras de um vídeo, exporte um quadro ou um clipe curto em 1080 × 1920, solte-o no visualizador do SafeZoneSnap e alterne entre Reels, TikTok e Shorts. As faixas vermelhas hachuradas mostram o que a interface cobre e o contorno verde marca a área segura. Passe o cursor sobre qualquer elemento e corrija a posição no seu editor.',
       blocks: [
         { ol: [
           '<strong>Exporte um quadro ou um clipe curto</strong> na resolução final, de preferência o momento com mais texto na tela.',
@@ -106,6 +110,10 @@ const pt: HomeContent = {
     { q: 'Existe uma zona segura que funcione em todas as plataformas?', a: 'Sim: use a maior margem de cada lado. Para Reels, TikTok e Shorts juntos, são 220 px no topo, 150 px à direita, 480 px na base e 60 px à esquerda, uma área de 870 × 1220 px.' },
     { q: 'Posso usar o modelo baixado no CapCut, Premiere ou Canva?', a: 'Pode. «Baixar modelo» salva um PNG transparente de 1080 × 1920 com os guias ativos. Coloque na camada superior como referência e oculte antes de exportar.' },
   ],
+  sources: {
+    title: 'Fontes e metodologia',
+    note: 'Última revisão: outubro de 2026. As margens de Stories e anúncios no Reels seguem os percentuais publicados pela Meta. As de Reels, TikTok e Shorts orgânicos são medições próprias do SafeZoneSnap no player atual de cada app em 1080 × 1920, considerando o pior caso entre formatos de celular e arredondadas para mais. O TikTok e o YouTube não publicam margens seguras orgânicas; os links abaixo documentam o tamanho do quadro e o comportamento do player.',
+  },
 };
 
 export default pt;

@@ -2,6 +2,9 @@
 layout: ../../layouts/Prose.astro
 title: "YouTube Shorts Safe Area: Margins, Templates and Shelf Thumbnails"
 description: "The YouTube Shorts player covers less of your frame than Reels or TikTok, but it covers it in different places. Here are the margins and how to build a reusable template."
+summary: "On a 1080 × 1920 YouTube Short, keep important content 160 px from the top, 380 px from the bottom, 60 px from the left and 140 px from the right. That leaves an 880 × 1380 px safe area, about 59% of the frame and the most generous of the three major short-video players."
+updated: "2026-10-30"
+sources: [shortsHelp, ytPlayer]
 date: "2026-10-30"
 ---
 

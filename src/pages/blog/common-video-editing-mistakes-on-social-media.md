@@ -2,6 +2,9 @@
 layout: ../../layouts/Prose.astro
 title: "9 Layout Mistakes That Get Vertical Videos Covered or Cropped"
 description: "The recurring framing and text-placement errors we see in Reels, TikToks and Shorts, why each one happens, and the specific fix for each."
+summary: "The most common vertical-video layout mistakes are lower-third subtitles, edge-to-edge text, headlines in the top 285 px, corner logos, “link below” arrows, faces in the right third, one cover for every surface, the wrong export size and outdated templates. Each one is fixed by keeping key content inside the measured 1080 × 1920 safe zone."
+updated: "2026-10-30"
+sources: [metaAds, tiktokAds, shortsHelp]
 date: "2026-10-30"
 ---
 

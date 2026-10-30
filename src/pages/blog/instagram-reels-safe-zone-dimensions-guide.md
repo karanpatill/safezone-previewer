@@ -2,6 +2,9 @@
 layout: ../../layouts/Prose.astro
 title: "Instagram Reels Safe Zone: Exact Dimensions for 1080 × 1920"
 description: "The pixel margins that keep text, faces and CTAs clear of the Reels interface, plus the 4:5 feed and 3:4 grid crops most guides forget."
+summary: "On a 1080 × 1920 Instagram Reel, keep text, faces and calls to action at least 220 px from the top, 420 px from the bottom, 60 px from the left and 140 px from the right: an 880 × 1280 px safe area. If the Reel also plays in the 4:5 home feed, start text at y 285 instead of y 220."
+updated: "2026-10-30"
+sources: [metaAds, metaDev]
 date: "2026-10-30"
 ---
 

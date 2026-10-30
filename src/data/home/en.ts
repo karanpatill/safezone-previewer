@@ -11,6 +11,7 @@ const en: HomeContent = {
     {
       id: 'what',
       title: 'What a safe zone actually is',
+      lead: 'A safe zone is the part of a 1080 × 1920 vertical video that no app interface covers. On Instagram Reels it is 880 × 1280 px (220 px top, 420 px bottom, 60 px left, 140 px right), on TikTok 870 × 1260 px and on YouTube Shorts 880 × 1380 px. Keep text, faces, logos and calls to action inside it.',
       blocks: [
         { p: 'A safe zone is the part of a vertical video frame that no platform interface will ever sit on top of. Instagram Reels, TikTok and YouTube Shorts all play your upload edge to edge on a 1080 × 1920 pixel canvas, and then draw their own buttons, captions, progress bars and navigation directly over it. Nothing is reserved for the interface: the app simply paints its controls on your pixels. Whatever you place under those controls is either hidden outright or made hard to read by the dark gradient (the “scrim”) the app adds to keep its own white text legible.' },
         { p: 'That is why a frame that looks perfectly composed in your editor can fall apart after upload. The subtitle that sat neatly in the lower third now runs into the caption and the audio ticker. The price tag in the corner of a product shot disappears behind the like button. The presenter’s face, framed slightly high for a “headroom” look, collides with the Following / For You tabs. None of this shows up in a desktop preview window, because editors know nothing about the interface that will later be stacked on top.' },
@@ -36,6 +37,7 @@ const en: HomeContent = {
     {
       id: 'specs',
       title: 'Safe zone dimensions by platform',
+      lead: 'On a 1080 × 1920 frame, keep important content within these margins (top / bottom / left / right): Instagram Reels 220 / 420 / 60 / 140 px, TikTok 180 / 480 / 60 / 150 px, YouTube Shorts 160 / 380 / 60 / 140 px, Instagram Stories 250 / 250 / 65 / 65 px and Reels ads 250 / 670 / 65 / 65 px. One layout for all three organic apps needs 220 / 480 / 60 / 150 px.',
       blocks: [
         { p: 'The table lists the margins SafeZoneSnap uses for each preset, measured on the standard 1080 × 1920 delivery frame. “Safe area” is the rectangle left once all four margins are removed, and “usable” is the share of the full frame it represents. The Reels Ads and Stories rows follow Meta’s published creative guidance; the organic Reels, TikTok and Shorts rows are reference measurements taken from each app’s current layout.' },
         { table: 'specs' },
@@ -54,6 +56,7 @@ const en: HomeContent = {
     {
       id: 'crops',
       title: 'Feed and grid crops: the second safe zone',
+      lead: 'A 9:16 Reel shown in the Instagram or Facebook feed is cropped to 4:5 (1080 × 1350), which removes 285 px from the top and bottom. The Instagram profile grid uses 3:4 (1080 × 1440) and removes 240 px from each end; a 1:1 square removes 420 px. Crops are centred, so keep text between y 285 and y 1500.',
       blocks: [
         { p: 'A vertical video is not always shown at 9:16. When a Reel autoplays in the main Instagram or Facebook feed, it is cropped to 4:5. On your Instagram profile it becomes a 3:4 tile, the shape Instagram moved to in January 2025 after years of square thumbnails. Other surfaces still use 1:1. Each crop is taken from the vertical centre of your frame, so it removes equal bands from the top and the bottom.' },
         { table: 'crops' },
@@ -76,7 +79,8 @@ const en: HomeContent = {
     },
     {
       id: 'workflow',
-      title: 'How to use the previewer in a real edit',
+      title: 'How to check safe zones on a video',
+      lead: 'To check safe zones on a video, export a frame or short clip at 1080 × 1920, drop it into the SafeZoneSnap previewer and switch between the Reels, TikTok and Shorts presets. Hatched red bands show what the interface covers and the green outline marks the safe area. Hover any element for exact coordinates, then fix placement in your editor.',
       blocks: [
         { ol: [
           '<strong>Export a still or a short clip</strong> from your editor at the final resolution. A single frame with your heaviest text is usually enough; a short clip is useful for checking animated captions.',
@@ -126,6 +130,10 @@ const en: HomeContent = {
     { q: 'Does the previewer work with horizontal or square files?', a: 'It does. Choose Fill frame to see how a platform would crop the file to 9:16, or Fit inside to see it letterboxed. The media panel flags any file that is not 9:16 so you know the platform will crop or pad it.' },
     { q: 'How often are the specs updated?', a: 'We review the presets whenever Instagram, TikTok or YouTube ships a visible change to the player layout, and at least quarterly. The review date is shown at the top of this guide.' },
   ],
+  sources: {
+    title: 'Sources and methodology',
+    note: 'Last reviewed October 2026. Stories and Reels-ad margins follow Meta’s published percentages. Organic Reels, TikTok and Shorts margins are SafeZoneSnap’s own measurements of each app’s current player at 1080 × 1920, taken as the worst case across common phone shapes and rounded conservatively. TikTok and YouTube do not publish organic safe-zone values; the links below document frame size and player behaviour.',
+  },
 };
 
 export default en;

@@ -6,7 +6,13 @@ export type Block =
   | { pre: string }
   | { table: 'specs' | 'crops' };
 
-export interface Section { id: string; title: string; blocks: Block[] }
+export interface Section {
+  id: string;
+  title: string;
+  /** 45–60 word direct answer shown right under the heading, written to be quoted on its own. */
+  lead?: string;
+  blocks: Block[];
+}
 
 export interface HomeContent {
   toc: string;
@@ -15,4 +21,5 @@ export interface HomeContent {
   cropWhere: [string, string, string];
   faqTitle: string;
   faqs: { q: string; a: string }[];
+  sources: { title: string; note: string };
 }

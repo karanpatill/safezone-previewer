@@ -2,6 +2,8 @@
 layout: ../layouts/Prose.astro
 title: "About SafeZoneSnap"
 description: "Why this tool exists, how the safe-zone presets are measured, and the principles behind how it is built."
+summary: "SafeZoneSnap is a free, browser-based previewer built by independent developer Karan Patil. It overlays the Instagram, TikTok and YouTube Shorts interfaces on your 1080 × 1920 video, using Meta’s published Stories and Reels-ad margins plus conservative measurements of each organic player, reviewed whenever a platform changes its layout."
+sources: [metaAds, metaDev, tiktokDev, tiktokAds, shortsHelp, ytPlayer]
 eyebrow: "About"
 updated: "2026-10-30"
 ---

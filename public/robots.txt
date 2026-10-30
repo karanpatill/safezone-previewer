@@ -1,3 +1,46 @@
+# SafeZoneSnap — every page is public. Search engines and AI assistants are welcome to crawl,
+# index, cite and train on this site. LLM-friendly summaries: /llms.txt and /llms-full.txt
+
+# Search engines
+User-agent: Googlebot
+User-agent: Bingbot
+User-agent: Applebot
+User-agent: DuckDuckBot
+User-agent: YandexBot
+User-agent: Baiduspider
+Allow: /
+
+# OpenAI (ChatGPT search, user-initiated browsing, training)
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: GPTBot
+Allow: /
+
+# Anthropic (Claude search, user-initiated fetches, training)
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: ClaudeBot
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+Allow: /
+
+# Gemini and Apple Intelligence use of content (product tokens, not separate crawlers).
+# Google AI Overviews and AI Mode are fed by Googlebot above.
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+Allow: /
+
+# Others
+User-agent: Meta-ExternalAgent
+User-agent: CCBot
+User-agent: cohere-ai
+User-agent: MistralAI-User
+User-agent: DuckAssistBot
+Allow: /
+
 User-agent: *
 Allow: /
 

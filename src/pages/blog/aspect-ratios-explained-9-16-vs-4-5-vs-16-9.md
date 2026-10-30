@@ -2,6 +2,9 @@
 layout: ../../layouts/Prose.astro
 title: "Aspect Ratios Explained: 9:16 vs 4:5 vs 3:4 vs 1:1 vs 16:9"
 description: "What each social video aspect ratio is for, the pixel sizes to export, and how one vertical master gets cropped as it moves through feeds, grids and players."
+summary: "Export 9:16 (1080 × 1920) for Reels, TikTok, Shorts and Stories, 4:5 (1080 × 1350) for feed posts, 3:4 (1080 × 1440) for the Instagram profile grid, 1:1 (1080 × 1080) for square placements and 16:9 (1920 × 1080) for YouTube and the web. A 9:16 master cropped to 4:5 loses 285 px at the top and bottom."
+updated: "2026-10-30"
+sources: [metaAds, shortsHelp]
 date: "2026-10-30"
 ---
 

@@ -1,10 +1,24 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { SITE } from '../../config/site';
+import { ID, abs } from '../../config/seo';
 
 interface Post { url: string; frontmatter: { title: string; description: string; date: string } }
 const posts = Object.values(import.meta.glob<Post>('./*.md', { eager: true }))
   .sort((a, b) => b.frontmatter.date.localeCompare(a.frontmatter.date) || a.frontmatter.title.localeCompare(b.frontmatter.title));
+const jsonLd = [{
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  '@id': `${abs('/blog/')}#webpage`,
+  name: 'Creator guides to safe zones and vertical video layout',
+  url: abs('/blog/'),
+  inLanguage: 'en',
+  isPartOf: { '@id': ID.website },
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: posts.map((p, i) => ({ '@type': 'ListItem', position: i + 1, url: abs(p.url + '/'), name: p.frontmatter.title })),
+  },
+}];
 const fmt = (d: string) => new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 ---
 
@@ -12,6 +26,8 @@ const fmt = (d: string) => new Date(d).toLocaleDateString('en-US', { year: 'nume
   title={`Creator guides to safe zones and vertical video layout — ${SITE.name}`}
   description="In-depth guides to Instagram Reels, TikTok and YouTube Shorts safe zones, aspect ratios, feed crops and the layout mistakes that get vertical videos covered."
   path="/blog/"
+  breadcrumbs={[{ name: 'Guides', path: '/blog/' }]}
+  jsonLd={jsonLd}
 >
   <section class="mx-auto max-w-[880px] px-4 sm:px-6 pt-12 sm:pt-16">
     <p class="eyebrow">Guides</p>

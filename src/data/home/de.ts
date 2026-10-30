@@ -11,6 +11,7 @@ const de: HomeContent = {
     {
       id: 'what',
       title: 'Was eine Safe Zone wirklich ist',
+      lead: 'Eine Safe Zone ist der Teil eines vertikalen 1080 × 1920-Videos, den keine App-Oberfläche verdeckt. Bei Instagram Reels misst sie 880 × 1280 px (220 px oben, 420 px unten, 60 px links, 140 px rechts), bei TikTok 870 × 1260 px und bei YouTube Shorts 880 × 1380 px. Texte, Gesichter, Logos und Calls to Action gehören hinein.',
       blocks: [
         { p: 'Die Safe Zone ist der Teil des Hochkantbildes, auf den keine Plattform ihre Oberfläche legt. Instagram Reels, TikTok und YouTube Shorts spielen dein Video randlos auf einer Fläche von 1080 × 1920 Pixeln ab und zeichnen darüber Buttons, Bildunterschrift, Fortschrittsbalken und Navigation. Nichts davon ist ausgespart: Die App malt ihre Bedienelemente direkt auf deine Pixel und legt zusätzlich einen dunklen Verlauf darunter, damit ihr eigener weißer Text lesbar bleibt.' },
         { p: 'Deshalb kann ein Bild, das im Schnittprogramm perfekt aussieht, nach dem Hochladen auseinanderfallen. Der Untertitel im unteren Drittel läuft in die Bildunterschrift und den Audio-Hinweis; der Preis in der Ecke eines Produktbilds verschwindet hinter dem Like-Button; das etwas hoch kadrierte Gesicht landet unter den Tabs „Folge ich / Für dich“. Das Schnittprogramm weiß nichts von der Oberfläche, die später darübergelegt wird – in der Desktop-Vorschau fällt das Problem also nie auf.' },
@@ -35,6 +36,7 @@ const de: HomeContent = {
     {
       id: 'specs',
       title: 'Safe-Zone-Maße nach Plattform',
+      lead: 'Auf einem 1080 × 1920-Frame hältst du wichtige Inhalte innerhalb dieser Ränder (oben / unten / links / rechts): Instagram Reels 220 / 420 / 60 / 140 px, TikTok 180 / 480 / 60 / 150 px, YouTube Shorts 160 / 380 / 60 / 140 px, Instagram Stories 250 / 250 / 65 / 65 px und Reels-Anzeigen 250 / 670 / 65 / 65 px. Ein Layout für alle drei organischen Apps braucht 220 / 480 / 60 / 150 px.',
       blocks: [
         { p: 'Die Tabelle zeigt die Ränder, die jede SafeZoneSnap-Voreinstellung auf dem Standardformat 1080 × 1920 verwendet. „Safe Zone“ ist das Rechteck, das nach Abzug aller vier Ränder bleibt, „Nutzbar“ sein Anteil an der Gesamtfläche. Die Zeilen für Stories und Reels-Anzeigen folgen Metas veröffentlichten Vorgaben; die organischen Werte für Reels, TikTok und Shorts sind Referenzmessungen am aktuellen Layout der Apps.' },
         { table: 'specs' },
@@ -51,6 +53,7 @@ const de: HomeContent = {
     {
       id: 'crops',
       title: 'Feed- und Profilzuschnitte: die zweite Safe Zone',
+      lead: 'Ein 9:16-Reel im Instagram- oder Facebook-Feed wird auf 4:5 (1080 × 1350) zugeschnitten, wodurch oben und unten je 285 px wegfallen. Das Instagram-Profilraster nutzt 3:4 (1080 × 1440) und entfernt an jedem Ende 240 px; ein 1:1-Quadrat entfernt 420 px. Alle Zuschnitte sind zentriert, also halte Text zwischen y 285 und y 1500.',
       blocks: [
         { p: 'Ein Hochkantvideo wird nicht immer in 9:16 gezeigt. Im Instagram- und Facebook-Feed wird es auf 4:5 beschnitten; im Profilraster wird es zur 3:4-Kachel, dem Format, das Instagram im Januar 2025 eingeführt hat; andere Oberflächen nutzen weiterhin 1:1. Jeder Zuschnitt wird aus der Bildmitte genommen und entfernt oben und unten gleich breite Streifen.' },
         { table: 'crops' },
@@ -70,7 +73,8 @@ const de: HomeContent = {
     },
     {
       id: 'workflow',
-      title: 'So nutzt du die Vorschau im echten Schnitt',
+      title: 'So prüfst du die Safe Zones eines Videos',
+      lead: 'Um die Safe Zones eines Videos zu prüfen, exportierst du ein Standbild oder einen kurzen Clip in 1080 × 1920, ziehst ihn in die SafeZoneSnap-Vorschau und wechselst zwischen Reels, TikTok und Shorts. Rot schraffierte Bereiche zeigen, was die Oberfläche verdeckt, die grüne Linie markiert die sichere Fläche. Fahre über ein Element, lies die Koordinaten ab und korrigiere im Schnittprogramm.',
       blocks: [
         { ol: [
           '<strong>Exportiere ein Standbild oder einen kurzen Clip</strong> in finaler Auflösung, am besten die Stelle mit dem meisten Text.',
@@ -106,6 +110,10 @@ const de: HomeContent = {
     { q: 'Gibt es eine Safe Zone für alle Plattformen?', a: 'Ja: Nimm auf jeder Seite den größten Rand. Für Reels, TikTok und Shorts zusammen sind das 220 px oben, 150 px rechts, 480 px unten und 60 px links, also 870 × 1220 px.' },
     { q: 'Kann ich das Overlay in CapCut, Premiere oder Canva nutzen?', a: 'Ja. „Overlay laden“ speichert ein transparentes PNG in 1080 × 1920 mit den aktiven Hilfslinien. Lege es als Referenz auf die oberste Ebene und blende es vor dem Export aus.' },
   ],
+  sources: {
+    title: 'Quellen und Methodik',
+    note: 'Zuletzt geprüft: Oktober 2026. Die Ränder für Stories und Reels-Anzeigen folgen den von Meta veröffentlichten Prozentwerten. Die Werte für organische Reels, TikTok und Shorts sind eigene Messungen von SafeZoneSnap am aktuellen Player jeder App bei 1080 × 1920, im ungünstigsten Fall über gängige Smartphone-Formate und vorsichtig aufgerundet. TikTok und YouTube veröffentlichen keine organischen Safe-Zone-Werte; die folgenden Links dokumentieren Bildformat und Player-Verhalten.',
+  },
 };
 
 export default de;

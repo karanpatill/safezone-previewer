@@ -2,6 +2,9 @@
 layout: ../../layouts/Prose.astro
 title: "TikTok Safe Zone Margins: Keeping Captions and Subtitles Clear"
 description: "Why TikTok covers more of the bottom of your video than any other app, the exact margins on a 1080 × 1920 frame, and how to place subtitles that survive it."
+summary: "The TikTok safe zone on a 1080 × 1920 video is 180 px from the top, 480 px from the bottom, 60 px from the left and 150 px from the right, leaving 870 × 1260 px. Its bottom margin is the largest of any short-video app, so place subtitle baselines between y 1180 and y 1420."
+updated: "2026-10-30"
+sources: [tiktokDev, tiktokAds]
 date: "2026-10-30"
 ---
 
