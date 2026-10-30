@@ -78,8 +78,11 @@ class SafeZonePreviewer extends HTMLElement {
     if (this.video.paused || this.media?.source !== this.video) return;
     this.paint();
     this.updateScrub();
-    if ('requestVideoFrameCallback' in this.video) this.video.requestVideoFrameCallback(this.loopVideo);
-    else requestAnimationFrame(this.loopVideo);
+    if ('requestVideoFrameCallback' in this.video) {
+      (this.video as any).requestVideoFrameCallback(this.loopVideo);
+    } else {
+      requestAnimationFrame(this.loopVideo);
+    }
   };
 
   /* ——— controls ——— */
@@ -245,8 +248,9 @@ class SafeZonePreviewer extends HTMLElement {
   /* ——— media ——— */
 
   private async load(file: File) {
-    const isVideo = file.type.startsWith('video/');
-    if (!isVideo && !file.type.startsWith('image/')) return this.toast(this.t.toast.badType, true);
+    const isVideo = file.type.startsWith('video/') || /\.(mp4|mov|webm|m4v|mkv|avi|mts)$/i.test(file.name);
+    const isImage = file.type.startsWith('image/') || /\.(png|jpe?g|webp|gif|svg|avif|bmp|tiff)$/i.test(file.name);
+    if (!isVideo && !isImage) return this.toast(this.t.toast.badType, true);
 
     this.releaseMedia();
     this.objectUrl = URL.createObjectURL(file);
@@ -254,20 +258,63 @@ class SafeZonePreviewer extends HTMLElement {
     try {
       if (isVideo) {
         const v = this.video;
+        v.muted = true;
+        v.defaultMuted = true;
+        v.playsInline = true;
+        v.loop = true;
+        v.preload = 'auto';
         v.src = this.objectUrl;
-        await new Promise<void>((ok, fail) => {
-          v.onloadeddata = () => ok();
-          v.onerror = () => fail(new Error('decode'));
+
+        await new Promise<void>((resolve, reject) => {
+          if (v.readyState >= 2 && v.videoWidth > 0) return resolve();
+          let settled = false;
+          const onReady = () => {
+            if (!settled) {
+              settled = true;
+              cleanup();
+              resolve();
+            }
+          };
+          const onError = (e: Event) => {
+            if (!settled) {
+              settled = true;
+              cleanup();
+              reject(e);
+            }
+          };
+          const cleanup = () => {
+            v.removeEventListener('loadedmetadata', onReady);
+            v.removeEventListener('loadeddata', onReady);
+            v.removeEventListener('canplay', onReady);
+            v.removeEventListener('error', onError);
+          };
+          v.addEventListener('loadedmetadata', onReady);
+          v.addEventListener('loadeddata', onReady);
+          v.addEventListener('canplay', onReady);
+          v.addEventListener('error', onError);
+          v.load();
+
+          setTimeout(() => {
+            if (!settled && (v.videoWidth > 0 || v.readyState >= 1)) {
+              onReady();
+            }
+          }, 1200);
         });
-        this.media = { source: v, w: v.videoWidth, h: v.videoHeight };
-        v.play().catch(() => {});
+
+        const vw = v.videoWidth || 1080;
+        const vh = v.videoHeight || 1920;
+        this.media = { source: v, w: vw, h: vh };
+        v.play().catch(() => {
+          this.paint();
+        });
       } else {
         const img = new Image();
         img.src = this.objectUrl;
         await img.decode();
         this.media = { source: img, w: img.naturalWidth, h: img.naturalHeight };
       }
-    } catch {
+    } catch (err) {
+      console.error('SafeZoneSnap media load error:', err);
       this.releaseMedia();
       this.toast(this.t.toast.badType, true);
       return;
@@ -282,6 +329,7 @@ class SafeZonePreviewer extends HTMLElement {
     this.dataset.hasMedia = '';
     this.$('videoBar').hidden = !isVideo;
     this.store.set({ panX: 0, panY: 0, zoom: 100 });
+    this.paint();
   }
 
   private releaseMedia() {
@@ -304,7 +352,9 @@ class SafeZonePreviewer extends HTMLElement {
     const v = this.video;
     const btn = this.$('playBtn');
     v.addEventListener('play', () => { btn.dataset.playing = ''; btn.setAttribute('aria-label', this.t.video.pause); this.loopVideo(); });
-    v.addEventListener('pause', () => { delete btn.dataset.playing; btn.setAttribute('aria-label', this.t.video.play); });
+    v.addEventListener('pause', () => { delete btn.dataset.playing; btn.setAttribute('aria-label', this.t.video.play); this.paint(); });
+    v.addEventListener('timeupdate', () => { this.updateScrub(); if (v.paused) this.paint(); });
+    v.addEventListener('seeked', () => { this.paint(); });
   }
 
   private updateScrub() {

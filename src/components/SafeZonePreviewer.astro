@@ -46,7 +46,7 @@ const margins = [
           <p class="text-[12.5px] text-ink-2 max-w-[240px] leading-relaxed">{t.dropSub}</p>
           <button type="button" class="btn btn-primary mt-2" data-action="browse">{t.browse}</button>
         </div>
-        <video data-ref="video" muted playsinline loop preload="auto" class="hidden"></video>
+        <video data-ref="video" muted playsinline loop preload="auto" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; z-index: -10;"></video>
       </div>
 
       <div data-ref="videoBar" hidden class="mx-auto mt-3 flex items-center gap-3" style="width: min(100%, calc((100svh - 7rem) * 9 / 16)); min-width: 260px;">
