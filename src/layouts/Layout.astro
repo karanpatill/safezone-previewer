@@ -87,7 +87,32 @@ const trail = breadcrumbs.length ? [breadcrumbList([{ name: SITE.name, path: hom
       <link rel="canonical" href={canonical} />
       <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
     </>}
+    <!-- Multi-platform Favicons & Browser Icons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    <!-- Apple iOS Safari & Home Screen -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="SafeZoneSnap" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <!-- Safari Pinned Tab -->
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#34d399" />
+
+    <!-- Progressive Web App (PWA) & Android -->
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="application-name" content="SafeZoneSnap" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- Microsoft Tiles (Windows 10/11 Start & Edge) -->
+    <meta name="msapplication-TileColor" content="#08090c" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+
     <link rel="sitemap" href="/sitemap.xml" />
 
     {!noindex && Object.entries(alternates).map(([l, p]) => (
@@ -105,11 +130,14 @@ const trail = breadcrumbs.length ? [breadcrumbList([{ name: SITE.name, path: hom
       <meta property="og:locale:alternate" content={LOCALE_META[l as Locale].og} />
     ))}
     <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:secure_url" content={imageUrl} />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content={String(OG_IMAGE.width)} />
     <meta property="og:image:height" content={String(OG_IMAGE.height)} />
     <meta property="og:image:alt" content={imageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@SafeZoneSnap" />
+    <meta name="twitter:creator" content="@SafeZoneSnap" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageUrl} />
